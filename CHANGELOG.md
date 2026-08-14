@@ -40,6 +40,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   I-NOLLM / I-NET / I-ISOLATION. **CI is written and committed;
   actual matrix green status will be reported after the owner pushes
   and the GitHub Actions run completes.**
+- **RG-0.4 post-mortem bug fixes** (commit follows):
+  - Pre-flight `Pre-flight: requested sessions exist in noxfile` step
+    replaces the (non-existent in nox 2026.8.10) `--error-on-no-session`
+    flag. The check parses `noxfile.py` via `ast` to enumerate all
+    `@nox.session`-decorated functions and fails if any of the six
+    CI-requested names (`lint`, `types`, `tests`, `metrics_verify`,
+    `selftest`, `docs`) is missing. Implicit `nox -s <name>` already
+    raises on unknown sessions; the pre-flight is belt-and-braces
+    against rename drift between noxfile.py and the matrix block.
+  - `Layer pytest channel` step now reads the resolved pytest version
+    via `$python_bin -c ...` directly instead of `uv run python -c ...`.
+    The latter triggers a `uv sync` side effect that would roll back
+    the override right before the version check (causally confirmed
+    by a local reproducer).
 
 ### Notes
 - **RG-0.1 deferred**: PyPI/TestPyPI account creation and Trusted Publishing

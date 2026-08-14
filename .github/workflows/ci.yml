@@ -63,10 +63,17 @@ jobs:
         # rewrite pyproject.toml — the override is confined to the venv.
         # The "pin stays committed" invariant comes from this step being
         # limited to `uv pip install --python <venv>`.
+        #
+        # READ-THE-VERSION VIA $python_bin DIRECTLY, NOT `uv run python`.
+        # `uv run python ...` triggers a fresh `uv sync` as a side effect,
+        # which would roll back the override we just installed and report
+        # the wrong version (causally confirmed on 2026-08-15 with a
+        # local reproducer). Calling the venv interpreter directly via
+        # $python_bin bypasses sync and reads the post-override state.
         run: |
           python_bin=$(uv run python -c "import sys; print(sys.executable)")
           uv pip install --python "$python_bin" --quiet "pytest==${PYTEST_CHANNEL}.*"
-          resolved=$(uv run python -c "import importlib.metadata as m; print(m.version('pytest'))")
+          resolved=$("$python_bin" -c "import importlib.metadata as m; print(m.version('pytest'))")
           case "$resolved" in
             ${PYTEST_CHANNEL}.*) echo "OK resolved pytest $resolved" ;;
             *) echo "ERROR: resolved pytest $resolved does not match channel ${PYTEST_CHANNEL}.x" && exit 1 ;;
@@ -74,15 +81,67 @@ jobs:
         env:
           PYTEST_CHANNEL: ${{ matrix.pytest-channel }}
 
+      - name: 'Pre-flight: requested sessions exist in noxfile'
+        # nox 2026.8.10 (the version pinned in noxfile.py via 'nox>=2024.4')
+        # does NOT support --error-on-no-session. We verified that with
+        # `uv run nox --help`: the choice of error-on-* flags is restricted
+        # to --error-on-external-run and --error-on-missing-interpreters.
+        # nox already explodes with "Error while collecting sessions.
+        # Sessions not found: <name>" if a -s argument is wrong, so a
+        # dedicated "error on no session" flag is redundant. We add a
+        # belt-and-braces pre-flight: read all @nox.session-decorated
+        # functions from noxfile.py via Python AST and fail loudly if any
+        # of the six CI names is missing.
+        #
+        # Why AST and not `nox -l`?
+        # `nox -l` / `--list-sessions` / `--list` all filter by
+        # `nox.options.sessions` (default ["lint", "types", "tests"] in
+        # noxfile.py) and therefore hide the NO-OP sessions. `--json`
+        # emits the same filtered list. The only way to see *all* sessions
+        # is to read the source. AST is the lightest-weight form of
+        # such a read; it does not execute the file.
+        #
+        # And why not `uv run python` here either? Because `uv run` runs
+        # `uv sync` first as a side effect, which would race with our
+        # pytest override from the previous step. We call the venv
+        # interpreter directly via the explicit `.venv/bin/python3`.
+        run: |
+          python_bin=".venv/bin/python3"
+          available=$("$python_bin" - <<'PYEOF'
+          import ast, pathlib
+          tree = ast.parse(pathlib.Path("noxfile.py").read_text())
+          for node in ast.walk(tree):
+              if isinstance(node, ast.FunctionDef):
+                  for dec in node.decorator_list:
+                      f = dec.func
+                      if isinstance(f, ast.Attribute) and f.attr == "session" and isinstance(f.value, ast.Name) and f.value.id == "nox":
+                          print(node.name)
+          PYEOF
+          )
+          requested="lint types tests metrics_verify selftest docs"
+          missing=""
+          for s in $requested; do
+            if ! echo "$available" | grep -qx "$s"; then
+              missing="$missing $s"
+            fi
+          done
+          if [ -n "$missing" ]; then
+            echo "ERROR: nox-sessions missing in noxfile.py:$missing" >&2
+            echo "Available: $available" >&2
+            exit 1
+          fi
+          echo "OK all requested nox sessions are present"
+
       - name: Run nox sessions
         # Explicit session list (rather than relying on nox.options.sessions
         # in noxfile.py) so the three NO-OP sessions emit a visible "skipped"
         # status to CI reviewers instead of being silently omitted.
-        # --non-interactive prevents REPL hangs; --error-on-no-session
-        # future-proofs against typos.
+        # --non-interactive prevents REPL hangs. We do NOT pass
+        # --error-on-no-session: that flag is not implemented in nox
+        # 2026.8.10 (see the pre-flight step above for the explicit
+        # check that replaces it).
         run: |
           uv run nox --non-interactive \
-                       --error-on-no-session \
                        -s lint-${{ matrix.python }} \
                        -s types-${{ matrix.python }} \
                        -s tests-${{ matrix.python }} \
