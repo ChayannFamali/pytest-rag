@@ -8,4 +8,4 @@ beyond the implicit plugin registration (see AGENTS.md §4 / I-ISOLATION).
 
 from __future__ import annotations
 
-__all__: list[str] = []
+__all__: list[str] = []  # pragma: no cover

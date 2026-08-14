@@ -20,6 +20,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   in < 10 s; `uv run pytest -q` → 4 passed; `uv run mypy --strict src` →
   no issues; `uv run ruff {check,format} src tests` → clean.
 
+### Changed
+- **RG-0.2 patch**: pin `pytest>=7,<9` (was `pytest>=7.0`). Resolves to
+  pytest 8.4.2; keeps the CI matrix claim in `PLANNING.md §1` (3.10-3.13 ×
+  pytest 7/8) honest. See commit `93d783b`.
+- **RG-0.3**: `noxfile.py` with 6 sessions (`lint`, `types`, `tests`,
+  `metrics_verify`, `selftest`, `docs`) × 4 Python (3.10-3.13) = 24
+  variants. `nox -s lint-3.12 types-3.12 tests-3.12` ✅; the three
+  NO-OP sessions explicitly `session.skip(...)` until RG-2.7/RG-8.1/
+  RG-9.2 ship. The `--cov-fail-under=85` gate is deferred to P2/RG-2.0
+  (P0/P1 modules are no-op stubs; coverage-fail-under is structurally
+  unreachable). New test: `tests/test_noxfile.py` (6 tests).
+
 ### Notes
 - **RG-0.1 deferred**: PyPI/TestPyPI account creation and Trusted Publishing
   (OIDC) are deferred to P9/RG-9.5 by owner decision. GitHub repository

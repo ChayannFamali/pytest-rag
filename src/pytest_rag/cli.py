@@ -10,7 +10,7 @@ from __future__ import annotations
 import sys
 
 
-def main() -> int:
+def main() -> int:  # pragma: no cover
     """Placeholder CLI entry point. Returns 0 in RG-0.2; real CLI in P7."""
     print("pytest-rag 0.0.1: CLI not yet implemented (RG-7.1)", file=sys.stderr)
     return 0
