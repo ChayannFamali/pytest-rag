@@ -1,0 +1,24 @@
+# MANIFEST.in for the pytest-rag source distribution.
+#
+# NOTE: This file is intentionally kept for documentation and
+# downstream tooling compatibility (flit, setuptools, pip download
+# with --no-binary :all:). It is NOT honored by hatchling, which is
+# the build backend declared in [build-system] of pyproject.toml.
+# Hatchling uses git-tracked files for the sdist by default and is
+# configured via [tool.hatch.build.targets.sdist] in pyproject.toml.
+#
+# If at some point we switch to a setuptools build backend, the
+# rules below would become the source of truth for the sdist.
+#
+# We intentionally do NOT include docs/ in any distribution: docs/
+# is a private separate git repo (see PLANNING.md §8 2026-08-15).
+# Shipping it would leak the maintainer's working playbook.
+
+include LICENSE
+include CHANGELOG.md
+include CONTRIBUTING.md
+include README.md
+recursive-include .github/ISSUE_TEMPLATE *.md *.yml
+include .github/workflows/ci.yml
+recursive-include tests *.py
+include noxfile.py

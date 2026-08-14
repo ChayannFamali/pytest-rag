@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Documentation
+    url: https://github.com/ChayannFamali/pytest-rag/blob/main/docs/PLANNING.md
+    about: PLANNING.md and AGENTS.md are the canonical reference documents.

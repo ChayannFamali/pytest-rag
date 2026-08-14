@@ -40,6 +40,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   I-NOLLM / I-NET / I-ISOLATION. **CI is written and committed;
   actual matrix green status will be reported after the owner pushes
   and the GitHub Actions run completes.**
+- **RG-0.5**: project repository scaffolding. `LICENSE` (MIT, Copyright 2026 ChayannFamali), `CONTRIBUTING.md` (signposts the private `docs/` repo and the I-NOLLM / I-NET / I-ISOLATION / I-DET / I-FAILLOUD invariants), `MANIFEST.in` (kept for documentation; hatchling currently ignores it — see the file's header comment), four issue templates (`.github/ISSUE_TEMPLATE/{bug,feature,question,config}.yml`) with YAML frontmatter and `labels: [needs-triage]` semantics, `tests/test_repo_meta.py` (13 guards covering LICENSE / CHANGELOG / README / CONTRIBUTING / MANIFEST.in / issue templates + explicit absence of CODEOWNERS and SECURITY.md per AGENTS.md §6). `pyproject.toml` updated with a comment clarifying the hatchling sdist policy. **Wheel:** `pytest_rag/` + `LICENSE` + entry-points. **sdist:** top-level files + `pytest_rag/`. The non-runtime artefacts (`tests/`, `.github/`, `CONTRIBUTING.md`, `CHANGELOG.md`, `MANIFEST.in`) live in the repo and are not bundled.
 - **RG-0.4 post-mortem bug fixes** (commit follows):
   - Pre-flight `Pre-flight: requested sessions exist in noxfile` step
     replaces the (non-existent in nox 2026.8.10) `--error-on-no-session`

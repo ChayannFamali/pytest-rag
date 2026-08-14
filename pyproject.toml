@@ -73,6 +73,16 @@ packages = ["src/pytest_rag"]
 [tool.hatch.build.targets.wheel]
 packages = ["src/pytest_rag"]
 
+[tool.hatch.build.targets.sdist]
+# Hatchling builds sdist from tracked files (via VCS) by default. The
+# repo-meta files (LICENSE, README.md, CHANGELOG.md, CONTRIBUTING.md,
+# MANIFEST.in) and dev artefacts (tests/, .github/, noxfile.py) live
+# in the git repo and are NOT bundled into the sdist by hatchling
+# convention. End users installing from a wheel get the package
+# source; users cloning the repo get the full project. The MANIFEST.in
+# file is kept for documentation and for any downstream tooling that
+# expects it, but it has no effect on the hatchling build.
+
 [tool.ruff]
 line-length = 100
 target-version = "py310"
