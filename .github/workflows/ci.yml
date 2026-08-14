@@ -1,6 +1,6 @@
 name: CI
 
-on:
+"on":
   push:
     branches: [main]
   pull_request:
@@ -123,7 +123,12 @@ jobs:
           ! grep -RIn --include='*.py' -E \
             '(requests|urllib|httpx|aiohttp|websocket)\b' \
             src/pytest_rag
-      - name: I-ISOLATION
+      # I-ISOLATION-greppable: static regex guard. This is NOT the canonical
+      # pytester-based I-ISOLATION test scheduled for RG-8.4. The greppable
+      # guard catches import-time side effects the regex can see; the
+      # pytester-based test (RG-8.4) catches option/marker registration
+      # regressions and unknown-flag effects on third-party tests.
+      - name: I-ISOLATION-greppable
         # The plugin module must not pull heavy deps at import time, and
         # must not write to stdout/stderr during import.
         run: |
