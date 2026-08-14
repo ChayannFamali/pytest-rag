@@ -1,0 +1,66 @@
+# === Python ===
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+*.egg
+MANIFEST
+
+# === uv / hatchling ===
+.uv/
+uv.lock.bak
+
+# === Виртуальные окружения ===
+.venv/
+venv/
+env/
+ENV/
+
+# === Тесты / покрытие ===
+.pytest_cache/
+.cache/
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+.hypothesis/
+
+# === nox ===
+.nox/
+
+# === mypy / ruff ===
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.ruff_cache/
+
+# === mkdocs (билд-артефакты, НЕ исходники в docs/) ===
+site/
+
+# === Baseline / отчёты pytest-rag (генерируются локально) ===
+.rag_cache/
+report.md
+report.json
+*.junit.xml
+
+# === IDE ===
+.vscode/
+.idea/
+*.swp
+
+# === OS ===
+.DS_Store
+Thumbs.db
+
+# === Переменные окружения / секреты ===
+.env
+.env.*
+!.env.example
+
+docs/
