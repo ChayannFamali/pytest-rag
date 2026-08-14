@@ -36,7 +36,9 @@ classifiers = [
     "Topic :: Software Development :: Testing",
 ]
 dependencies = [
-    "pytest>=7.0",
+    # pytest 7.x and 8.x are the supported CI matrix per PLANNING.md §1 DoD;
+    # 9.x changes the plugin loading contract and is not yet validated here.
+    "pytest>=7,<9",
     "numpy>=1.24",
 ]
 
