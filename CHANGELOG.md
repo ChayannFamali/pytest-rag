@@ -31,6 +31,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   RG-9.2 ship. The `--cov-fail-under=85` gate is deferred to P2/RG-2.0
   (P0/P1 modules are no-op stubs; coverage-fail-under is structurally
   unreachable). New test: `tests/test_noxfile.py` (6 tests).
+- **RG-0.4**: `.github/workflows/ci.yml` — matrix 3.10–3.13 × pytest 7/8,
+  explicit session list (lint / types / tests / metrics_verify / selftest /
+  docs), `UV_LINK_MODE=copy` env, deterministic TZ/LC_ALL/PYTHONHASHSEED.
+  `nox -s tests` reports coverage but **does not** enforce
+  `--cov-fail-under=85` until RG-2.1 (per PLANNING.md §8 2026-08-15
+  coverage-gate deferral). Second job `invariants` greppable-guards
+  I-NOLLM / I-NET / I-ISOLATION. **CI is written and committed;
+  actual matrix green status will be reported after the owner pushes
+  and the GitHub Actions run completes.**
 
 ### Notes
 - **RG-0.1 deferred**: PyPI/TestPyPI account creation and Trusted Publishing
